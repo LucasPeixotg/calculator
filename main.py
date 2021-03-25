@@ -19,10 +19,18 @@ class MainApp(tk.Frame):
          fg='#eee',
          font=('Arial', 15),
          justify=tk.RIGHT,
-         bd=0,
+         highlightthickness=5,
+         highlightcolor='#333',
+         highlightbackground='#333',
+         bd=0
       )
       self.screen.bind('<1>', self.clean_when_error)
-      self.screen.grid(columnspan=4, ipadx=33 ,ipady=10)
+      self.screen.grid(columnspan=len(BUTTONS[0]), sticky=tk.N+tk.S+tk.E+tk.W)
+
+      for x in range(len(BUTTONS)+1):
+         tk.Grid.rowconfigure(self.master, x, weight=1)
+      for y in range(len(BUTTONS[0])):
+         tk.Grid.columnconfigure(self.master, y, weight=1)
 
       self.create_buttons(buttons=BUTTONS)
 
@@ -38,19 +46,16 @@ class MainApp(tk.Frame):
                bg='#111',
                fg='#eee',
                font=('Arial', 15),
-               width=6,
-               height=2,
                bd=0,
                command=lambda text=buttons[i][j]: self.button_actions(text),
             )
-            btn.grid(row=i+1, column=j)
+            btn.grid(row=i+1, column=j, sticky=tk.N+tk.S+tk.E+tk.W)
 
    def clean_when_error(self, *args):
       '''
       Function that clean the screen when clicked
       if the message is an error message.
       '''
-      print('Is it an ERROR message?')
       if self.screen.get() == 'ERROR':
          self.screen.delete(0, len(self.screen.get()))
 
@@ -67,7 +72,7 @@ class MainApp(tk.Frame):
          if self.screen.get():
             try:
                result = eval(self.screen.get())
-            except NameError or SyntaxError:
+            except (NameError, SyntaxError):
                print('ERROR')
                result = 'ERROR'
             self.screen.delete(0, len(self.screen.get()))
@@ -77,7 +82,7 @@ class MainApp(tk.Frame):
 
 root = tk.Tk()
 root.config(bg='#111')
-root.resizable(False, False)
+root.resizable(True, True)
 
 app = MainApp(master=root)
 app.mainloop()
